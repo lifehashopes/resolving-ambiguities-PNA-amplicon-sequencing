@@ -1,0 +1,48 @@
+======================================================================
+16S amplicon sequencing analysis 
+Sample set : Partial nitritation anammox reactors
+Sequencing : TU Darmstadt
+Instrument: Ion Proton/Ion S5
+
+Analysis performer: Shelesh Agrawal
+=======================================================================
+
+#Uploading the libraries required
+```{r}
+library("phyloseq")
+library("ggplot2")
+library("plyr")
+library("knitr")
+library("RColorBrewer")
+library("reshape2")
+library("gridExtra")
+library("vegan")
+library("directlabels")
+library("extrafont")
+library(scales)
+```
+
+##Primer comparison data
+```{r}
+#for data frames with non-unique row.names
+dfprimer<- read.csv2("primercompfinal.csv", header=TRUE,sep = ";")
+
+head(dfprimer)
+colnames(dfprimer)
+rapply(dfprimer,function(x)length(unique(x)))
+lapply(dfprimer, function(x) length(table(x)))##other mmethod to find the unique enteries
+
+sapply(dfprimer, levels)
+sapply(dfprimer, class)
+sapply(dfprimer, mode)
+
+dfprimer$Abundance=as.numeric(as.character(dfprimer$Abundance))
+
+
+#bar plot
+p1<- ggplot(dfprimer, aes(factor(Primer),Abundance),geom="bar")
+p1=p1+ geom_bar(aes(fill =Phylum, order=Phylum),stat = "identity",inherit.aes = T)
+
+p1
+p1+facet_grid(facets = .~ID,scales="free_y",drop=TRUE,shrink=TRUE,as.table=FALSE)+guides(fill=guide_legend(reverse=TRUE))+theme_classic()+xlab("\nHypervariable Region (16S rRNA gene) \n") + ylab("\n Relative Read Abundance (%)\n")+theme(text=element_text(family = "Arial",colour="black"),axis.text = element_text(colour = "black", size = 13),axis.text.x = element_text(angle=90),axis.title = element_text(colour = "black", size = 12),strip.text.y = element_text(colour = "black", angle = 0, size = 10,hjust = 0.5, vjust = 0.5))+scale_y_continuous(expand = c(0,0))
+```
